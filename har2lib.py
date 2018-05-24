@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 
+import sys
 import json
 from codecs import BOM_UTF8
 
@@ -155,7 +156,6 @@ class HarLib:
 
 if __name__ == "__main__":
     hl = HarLib()
-
-    file_name = "uk.farnell.com_detail.har"
+    file_name = sys.argv[1]
 
     hl.parse(file_name)
