@@ -5,6 +5,8 @@ How to use:
 1. generate .har file from [developer tools] in browser
 2. use crated .har file as input
 
-"""
-python har2lib.py test.har
-"""
+
+Example:
+- python har2lib.py test.com.har
+
+  - this will generate test.com.py
