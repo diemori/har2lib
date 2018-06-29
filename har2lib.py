@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 
 import sys
+from urllib.parse import unquote
 import json
 from codecs import BOM_UTF8
 
@@ -85,7 +86,7 @@ class HarLib:
                   "# File Name: %s\n" \
                   "# Creator: %s\n\n" % (self.file_name, creator)
 
-        with open(self.file_name.replace('.', '_').replace("_har", ".py"), 'w', encoding='utf-8') as fo:
+        with open("./result_py/" + self.file_name.replace('.', '_').replace("_har", ".py"), 'w', encoding='utf-8') as fo:
             fo.write(comment)
 
             fo.write("import requests\n\n\n")
@@ -100,8 +101,14 @@ class HarLib:
 
                     fo.write(ts + name + ' = ' + api_dict[api_title][name] + '\n')
 
-                "resp = requests.post(url, headers=headers, data=postData)"
-                fo.write(ts + 'return True\n\n\n')
+                if "POST" in api_dict[api_title]["method"]:
+                    post_req = "resp = requests.post(url, headers=headers, data=postData)"
+                    fo.write(ts + post_req + '\n\n')
+                else:
+                    get_req = "resp = requests.get(url, headers=headers)"
+                    fo.write(ts + get_req + '\n\n')
+
+                fo.write(ts + 'return resp\n\n\n')
 
     # url 관련 정보 파싱하여 가져온다
     def _get_url(self, url, param):
@@ -161,8 +168,8 @@ class HarLib:
         ts = self.tab_space
 
         for data in postdata:
-            print(data)
-            data_str = ts * 2 + "'" + data['name'] + "': '" + data['value'] + "',\n"
+            dvalue = unquote(data['value'])
+            data_str = ts * 2 + "'" + data['name'] + "': '" + dvalue + "',\n"
             result += data_str
 
         result += ts + "}\n"
