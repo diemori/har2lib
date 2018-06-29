@@ -62,7 +62,10 @@ class HarLib:
                 if item == "headers":
                     function_param[item] = self._get_headers(entry["request"][item])
 
-            function_param["method"] = '"' + entry["request"]["method"] + '"'
+                if item == "postData":
+                    function_param[item] = self._get_post_data(entry["request"][item]["params"])
+
+            function_param["method"] = '"' + entry["request"]["method"] + '"\n'
 
             api_dict[function_param["url_title"]] = function_param
 
@@ -92,13 +95,12 @@ class HarLib:
                 fo.write("def _%s():\n" % func_name)
 
                 for name in api_dict[api_title]:
-                    if name == 'url_title' or name == 'headers':
+                    if name == 'url_title':
                         continue
 
                     fo.write(ts + name + ' = ' + api_dict[api_title][name] + '\n')
 
-                fo.write(ts + "headers = " + api_dict[api_title]["headers"] + '\n')
-
+                "resp = requests.post(url, headers=headers, data=postData)"
                 fo.write(ts + 'return True\n\n\n')
 
     # url 관련 정보 파싱하여 가져온다
@@ -148,6 +150,20 @@ class HarLib:
         for header in headers:
             header_str = ts * 2 + "'" + header['name'] + "': '" + header['value'] + "',\n"
             result += header_str
+
+        result += ts + "}\n"
+
+        return result
+
+    def _get_post_data(self, postdata):
+        result = "{\n"
+
+        ts = self.tab_space
+
+        for data in postdata:
+            print(data)
+            data_str = ts * 2 + "'" + data['name'] + "': '" + data['value'] + "',\n"
+            result += data_str
 
         result += ts + "}\n"
 
